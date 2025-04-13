@@ -23,6 +23,17 @@ VSCode Tunnel is a simple repository designed to streamline the process of addin
 2. **Add Startup Script**
    Use the provided startup script located in the `startup/` directory to configure your Google Cloud Compute Engine.
 
+## Exemple of use
+
+### With Terraform
+ metadata = {
+    tunnel-name = "<NAME>",
+    token = "<TOKEN>"
+    user = "<USER>"
+}
+
+metadata_startup_script = "curl https://raw.githubusercontent.com/Matheusvxz/vscode-tunnel/refs/heads/main/startup/compute_engine.sh | bash"
+
 ## Repository Structure
 
 ```plaintext

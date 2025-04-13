@@ -1,9 +1,9 @@
 #!/bin/bash
-DEFAULT_USER="matheus"
-
 VSCODE_CLI_FOLDER="/usr/local/vscode-cli"
 GLOBAL_DATA_DIR="$VSCODE_CLI_FOLDER/data"
 VSCODE_CLI_BIN="$VSCODE_CLI_FOLDER/bin"
+VSCODE_CLI="$VSCODE_CLI_BIN/code"
+
 VS_CODE_BUILD=${1:-stable}
 
 user_exists() {
@@ -33,19 +33,21 @@ install_vscode_cli() {
 }
 
 get_google_metadata() {
-    local metadata_name = "$1"
-    local metadata_url = "http://metadata.google.internal/computeMetadata/v1/instance/attributes/"
+    local metadata_name="$1"
+    local metadata_url="http://metadata.google.internal/computeMetadata/v1/instance/attributes"
 
-    local metadata_value = "$(curl $metadata_url$metadata_name -H "Metadata-Flavor: Google")"
-
+    local metadata_value="$(curl "$metadata_url/$metadata_name" -H "Metadata-Flavor: Google")"
     echo $metadata_value
 }
+
 
 if [ -f "$VSCODE_CLI_BIN/code" ]; then
     echo "VS Code CLI already installed."
 else
     install_vscode_cli
 fi
+
+DEFAULT_USER=$(get_google_metadata user)
 
 echo "Checking user $DEFAULT_USER"
 if user_exists $DEFAULT_USER; then
@@ -57,9 +59,9 @@ else
     adduser --disabled-password --gecos "" $DEFAULT_USER
 fi
 
-echo "Running as user $(whoami)"
+echo "Running as user $($DEFAULT_USER)"
 echo "Initializing VS Code Tunnel service"
 
 echo "\"$(get_google_metadata token)\"" > $GLOBAL_DATA_DIR/token.json
 
-su -c "$FILE tunnel --name=$(get_google_metadata tunnel-name) --server-data-dir=$GLOBAL_DATA_DIR --no-sleep --accept-server-license-terms" $DEFAULT_USER
+su -c "cd ~ && $VSCODE_CLI tunnel --name=$(get_google_metadata tunnel-name) --server-data-dir=$GLOBAL_DATA_DIR --no-sleep --accept-server-license-terms" $DEFAULT_USER
