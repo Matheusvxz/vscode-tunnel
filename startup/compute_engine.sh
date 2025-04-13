@@ -27,7 +27,7 @@ install_vscode_cli() {
     fi
 
     if [ ! -f "$VSCODE_CLI_BIN/code" ]; then
-        curl -Lk "https://code.visualstudio.com/sha/download?$VS_CODE_BUILD=stable&os=cli-alpine-x64" | tar -xf -C $VSCODE_CLI_BIN --no-same-owner
+        curl -Lk "https://code.visualstudio.com/sha/download?$VS_CODE_BUILD=stable&os=cli-alpine-x64" | tar -xzv -C $VSCODE_CLI_BIN
         chmod +x "$VSCODE_CLI_BIN/code"
     fi
 }
@@ -36,7 +36,7 @@ get_google_metadata() {
     local metadata_name="$1"
     local metadata_url="http://metadata.google.internal/computeMetadata/v1/instance/attributes"
 
-    local metadata_value="$(curl "$metadata_url/$metadata_name" -H "Metadata-Flavor: Google")"
+    local metadata_value="$(curl "$metadata_url/$metadata_name" -H "Metadata-Flavor: Google" 2>/dev/null)"
     echo $metadata_value
 }
 
@@ -59,9 +59,10 @@ else
     adduser --disabled-password --gecos "" $DEFAULT_USER
 fi
 
-echo "Running as user $($DEFAULT_USER)"
+echo "Running as user $DEFAULT_USER"
 echo "Initializing VS Code Tunnel service"
 
-echo "\"$(get_google_metadata token)\"" > $GLOBAL_DATA_DIR/token.json
+su -c "echo \"\"$(get_google_metadata token)\"\" > ~/.vscode/cli/token.json" $DEFAULT_USER
 
-su -c "cd ~ && $VSCODE_CLI tunnel --name=$(get_google_metadata tunnel-name) --server-data-dir=$GLOBAL_DATA_DIR --no-sleep --accept-server-license-terms" $DEFAULT_USER
+export VSCODE_CLI_USE_FILE_KEYCHAIN=1
+su -c "cd ~ && $VSCODE_CLI tunnel --name=$(get_google_metadata tunnel-name) --accept-server-license-terms" $DEFAULT_USER
