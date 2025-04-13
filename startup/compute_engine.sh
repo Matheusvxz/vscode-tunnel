@@ -64,7 +64,8 @@ echo "Running as user $DEFAULT_USER"
 echo "Initializing VS Code Tunnel service"
 
 su -c "mkdir -p $USER_DATA_DIR" $DEFAULT_USER
-su -c "echo \"\"$(get_google_metadata token)\"\" > $USER_DATA_DIR/token.json" $DEFAULT_USER
+token=$(echo "\"$(get_google_metadata token)\"")
+su -c "echo $token > $USER_DATA_DIR/token.json" $DEFAULT_USER
 
 export VSCODE_CLI_USE_FILE_KEYCHAIN=1
 
