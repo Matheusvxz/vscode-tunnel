@@ -28,7 +28,7 @@ install_vscode_cli() {
     fi
 
     if [ ! -f "$VSCODE_CLI_BIN/code" ]; then
-        curl -Lk "https://code.visualstudio.com/sha/download?$VS_CODE_BUILD=stable&os=cli-alpine-x64" | tar -xzv -C $VSCODE_CLI_BIN
+        curl -Lk "https://code.visualstudio.com/sha/download?build=$VS_CODE_BUILD&os=cli-alpine-x64" | tar -xzv -C $VSCODE_CLI_BIN
         chmod +x "$VSCODE_CLI_BIN/code"
     fi
 }
