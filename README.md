@@ -8,6 +8,8 @@ VSCode Tunnel is a simple repository designed to streamline the process of addin
 * **Secure.** Leverages GitHub authentication for token generation.
 * **Lightweight.** Minimal setup required to get started.
 
+## This repository is still a work in progress, use at your own risk.
+
 ## How It Works
 
 1. **Generate a Token**
